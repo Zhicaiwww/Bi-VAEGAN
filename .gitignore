@@ -9,7 +9,6 @@ out/
 visual.py
 *.pth
 *.pdf
-*.png
 # Distribution / packaging
 .Python
 build/
