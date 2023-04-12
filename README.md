@@ -15,7 +15,7 @@ tensorboardX
 # **Data preparation**
 Download extracted AwA1, AwA2, CUB, FLO, SUN feature datasets from here, these data are mostly the same with TF-VAEGAN:
 ```  
-https://drive.google.com/file/d/1wl0JzFqmdbhRAp2WEgl0dVFW5jnoS6bM/view?usp=sharing
+https://drive.google.com/file/d/1Uax5IbQCaZhh7BAbwxos7Gq8SAKKbWbe/view?usp=share_link
  ```
 # **Training with known class prior**
 Check the scripts in ```scripts``` directory,
