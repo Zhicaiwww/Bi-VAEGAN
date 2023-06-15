@@ -36,3 +36,13 @@ Specify ```--unknown_classDistribution``` in the script and choose a prior estim
 # **Result**
 TZSL accuracy under known class prior:
 ![](result.png)
+
+
+# **Cite**
+@inproceedings{Bi-VAEGAN,
+  title={Bi-directional Distribution Alignment for Transductive Zero-Shot Learning},
+  author={Wang, Zhicai and Hao, Yanbin and Mu, Tingting and Li, Ouxiang and Wang, Shuo and He, Xiangnan},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={19893--19902},
+  year={2023}
+}
