@@ -5,7 +5,9 @@ import torch
 import torch.optim as optim
 import torch.backends.cudnn as cudnn
 from torch.autograd import Variable
-from datasets.ZSLDataset import  DATA_LOADER, map_label
+import sys
+sys.path.append(os.getcwd())
+from datasets.ZSLDataset import DATA_LOADER, map_label
 import classifiers.classifier_ZSL as classifier
 from networks import VAEGANV1_model as model
 import numpy as np
@@ -17,7 +19,6 @@ from networks.utils import generate_syn_feature, loss_fn, loss_fn_2, calc_gradie
 opt,log_dir,logger, training_logger = OPT().return_opt()
 
 opt.tr_sigma = 1.0
-ind_epoch = 3
 
 if opt.gzsl==True:
     assert opt.unknown_classDistribution is False
@@ -108,18 +109,25 @@ else:
     netR = None
     
 for epoch in range(opt.nepoch):
+    
+    if opt.transductive:
+        if epoch < opt.ind_epoch and opt.unknown_classDistribution:
+            print('----'*8,'Inductive Training','----'*8)
+            use_transductive_training = False
+            class_prior = None
+        else:
+            print('----'*8,'Transductive Training','----'*8)
+            use_transductive_training = True
+    
     for i, batch_idx in tqdm.tqdm(enumerate(range(0, data.ntrain, opt.batch_size)),desc = 'Trainging Epoch {}'.format(epoch)):
         # Step 1 -----------------------------------------------------------------------------
         ### Train attribute regressor 
 
-        if opt.transductive:
-            if epoch < opt.ind_epoch and opt.unknown_classDistribution:
-                opt.transductive = False
-                class_prior = None
-            else:
-                opt.transductive = True
+
+
         if i % 5 == 0 and opt.R:
-            if opt.RCritic and opt.transductive:
+            
+            if opt.RCritic and use_transductive_training:
                 ### Train attribute critic transductively
 
                 trainnet(netRCritic)
@@ -164,7 +172,7 @@ for epoch in range(opt.nepoch):
                 R_loss, mapped_seen_att = netR(input_res,input_att)
                 training_logger.update_meters(['R/loss'], [R_loss.item()],input_res.size(0))
 
-                if opt.RCritic and opt.transductive:
+                if opt.RCritic and use_transductive_training:
                     ### Train attribute critic transductively
                     sample_unseen(unknown_prior=opt.unknown_classDistribution,unseen_prior=class_prior)
                     mapped_unseen_att = netR(input_res_novel)
@@ -218,7 +226,7 @@ for epoch in range(opt.nepoch):
             optimizerCritic.step()
             training_logger.update_meters(['criticD/WGAN','criticD/GP_att'],[Wasserstein_D.item(),gradient_penalty.item()],input_res.size(0))
             ### train unconditional Critic
-            if opt.transductive:
+            if use_transductive_training:
                 netCritic_un.zero_grad()
                 sample_unseen(unknown_prior=opt.unknown_classDistribution,unseen_prior=class_prior)
                 criticD_un_real = netCritic_un(input_res_novel).mean()
@@ -246,7 +254,7 @@ for epoch in range(opt.nepoch):
             opt.lambda1 /= 1.1
         training_logger.update_meters(['criticD/lambda1',],[opt.lambda1],input_res.size(0))
 
-        if opt.transductive:
+        if use_transductive_training:
             gp_sum2 /= (opt.gammaD_un*opt.lambda2*opt.critic_iter)
             if (gp_sum2 > 1.05).sum() > 0:
                 opt.lambda2 *= 1.1
@@ -292,7 +300,7 @@ for epoch in range(opt.nepoch):
 
 
         training_logger.update_meters(['G/fakeG_loss','G/vae_loss'],[- opt.gammaG *criticG_fake_loss.item(),vae_loss.item()],input_res.size(0))         
-        if opt.transductive and opt.R :
+        if use_transductive_training and opt.R :
             # ReMap conditional unseen generation to its conditioned attribute  .
             noise_att.normal_(0, opt.tr_sigma)
             fake_novel = netG(noise_att,input_att_novel.detach())
@@ -355,22 +363,21 @@ for epoch in range(opt.nepoch):
             class_prior_es = zsl_cls.frequency
         elif opt.prior_estimation == 'CPE':
             from sklearn.cluster import KMeans
-            from visual import tsne_visual
             support_center = np.array(zsl_cls.cls_center)
-            print(np.isnan(support_center).any())
             kmeans = KMeans(n_clusters=len(data.unseenclasses),random_state=0,init= support_center).fit(zsl_cls.test_unseen_feature)
             las = kmeans.labels_
+            frequency = np.bincount(las)/len(las)
+            class_prior_es = frequency/frequency.sum()
+                        
+            # from visual import tsne_visual
             # center = kmeans.cluster_centers_
             # dd = np.concatenate([support_center,center])
             # tsne_visual(data.test_unseen_feature,las,path = 'support.pdf')
             # tsne_visual(unseen_data,data.test_unseen_label,path='gt.pdf')
-            frequency = np.bincount(las)/len(las)
-            class_prior_es = frequency/frequency.sum()
         else:
             class_prior_es = class_prior
         class_prior = class_prior_es
-        logger.info(f'cls_fre estimated from trained classifier:{zsl_cls.frequency}')
-        logger.info(f'Using Frequency Esetimation: {class_prior}')
+        logger.info(f"Real Vs Estimated class prior ({opt.prior_estimation} strategy):\n{data.real_class_prior}\n{class_prior_es}")
     
     training_logger.append(['ZSL/acc'],[acc.item()],epoch)
 

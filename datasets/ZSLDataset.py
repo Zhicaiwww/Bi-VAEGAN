@@ -121,7 +121,8 @@ class DATA_LOADER(object):
         self.train_mapped_label = map_label(self.train_label, self.seenclasses) 
         self.test_seen_mapped_label = map_label(self.test_seen_label,self.seenclasses)
         self.test_unseen_mapped_label = map_label(self.test_unseen_label, self.unseenclasses)
-        
+        unseen_class_counts = np.unique(self.test_unseen_label.numpy(),return_counts=True)[1]
+        self.real_class_prior = unseen_class_counts/unseen_class_counts.sum()
         self.seen_classes_dict = []
         for seen_class in range(len(self.seenclasses)):
             self.seen_classes_dict.append(np.where(self.train_mapped_label.numpy()==seen_class))
@@ -181,10 +182,12 @@ class DATA_LOADER(object):
             batch_ran_att = self.attribute[batch_ran_label]
         else:
             if unseen_prior is not None:
+                # Sampling from given class freequency.
                 unseen_prior = unseen_prior/unseen_prior.sum(0)
                 batch_ran_label = np.random.choice(self.unseenclasses,seen_batch,p = unseen_prior)
                 self.batch_ran_mapped_label = map_label(torch.from_numpy(batch_ran_label) , self.unseenclasses)
             else:
+                # Uniform sampling
                 batch_ran_label = np.random.choice(self.unseenclasses,seen_batch)
             batch_ran_att = self.attribute[batch_ran_label]
 

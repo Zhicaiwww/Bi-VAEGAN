@@ -24,12 +24,15 @@ Check the scripts in ```scripts``` directory,
 bash scripts/awa.sh
  ```
 # **Training with unknown class prior**
-Specify ```--unknown_classDistribution``` in the script and choose a prior estimation method like ```--prior_estimation 'CPE'```, 
+Specify ```--unknown_classDistribution``` in the script and choose a prior estimation method like ```--prior_estimation 'CPE'```.  
 
 ``` 
 #bash scripts/awa.sh
+# --prior_estimation prior estimation strategy. Should be within 'CPE', 'classifier' or 'BBSE'
+# --ind_epoch number of inductive training epochs before switching to transductive training
     ...
-    --unknown_classDistribution 
+    --unknown_classDistribution \
+    --ind_epoch 3 \ 
     --prior_estimation 'CPE'
     ...
  ```

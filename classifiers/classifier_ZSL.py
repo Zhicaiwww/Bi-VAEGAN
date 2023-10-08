@@ -31,15 +31,15 @@ class CLASSIFIER:
         self.netR = netR if self.feature_type != 'v' else None
         if self.netR:
             if self.feature_type == 'a':
-                print('use only A !!!!!')
+                print('Classifier input feature type is A !!!!!')
                 self.netR.eval()
                 self.input_dim = dec_size
             elif self.feature_type == 'h':
                 self.netR.eval()
-                print('use only H !!!!!')
+                print('Classifier input feature type is H !!!!!')
                 self.input_dim = dec_hidden_size
             else:
-                print('use  VHA !!!!!')
+                print('Classifier input feature type is VHA !!!!!')
                 self.netR.eval()
                 self.input_dim = self.input_dim + dec_size
                 self.input_dim += dec_hidden_size

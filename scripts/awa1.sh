@@ -1,8 +1,8 @@
 #!/bin/bash
 export CUDA_VISIBLE_DEVICES=5
 export OMP_NUM_THREADS=2 
-export DATA_ROOT=/home/zhicai/data
-export DATASET=AWA1
+export DATA_ROOT=/data/zhicai/datasets/ZSL_data
+export DATASET=AwA1
 export NCLASS_ALL=50
 export ATTSIZE=85
 export SYN_NUM=3000
@@ -66,6 +66,9 @@ for six in $(seq 1 1 ${#seed[@]}); do
             --classifier_lr $CLASSIFIER_LR \
             --mse_weight $MSE_WEIGHT\
             --radius $RADIUS\
+            --unknown_classDistribution \
+            --ind_epoch 1 \
+            --prior_estimation 'CPE'
             # 1>/dev/null 2>&1 &\
     done
 done

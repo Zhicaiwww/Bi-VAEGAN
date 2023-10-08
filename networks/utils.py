@@ -1,7 +1,6 @@
 import torch.nn as nn
 import torch
 import torch.autograd as autograd
-import torch.autograd.variable as Variable
 
 def perb_att(input_att):
     gama = torch.rand(input_att.size())
@@ -79,9 +78,9 @@ def calc_gradient_penalty(opt, netD,real_data, fake_data, input_att = None,lambd
         interpolates = opt.radius * interpolates / torch.norm(interpolates,p=2,dim=1,keepdim=True)
     if opt.cuda:
         interpolates = interpolates.cuda()
-    interpolates = Variable(interpolates, requires_grad=True)
+    interpolates = torch.tensor(interpolates, requires_grad=True)
     if input_att is not None:
-        disc_interpolates = netD(interpolates, Variable(input_att))
+        disc_interpolates = netD(interpolates, torch.tensor(input_att))
     else:
         disc_interpolates = netD(interpolates)
     ones = torch.ones(disc_interpolates.size())
