@@ -11,7 +11,7 @@ import torch.optim as optim
 import sys
 import torch.nn.functional as F
 from datasets import ZSLDataset as util
-from visual import tsne_visual
+# from visual import tsne_visual
 from networks.VAEGANV1_model import MLP_CRITIC,MLP_CRITIC_un,netRCritic
 import warnings
 
@@ -281,18 +281,18 @@ def pretune(opt,data,show_visual=False,save = False):
     #     opt.attSize = 2 * opt.attSize
 
 
-    if show_visual:
-        tune_test_unseen_feature=[]
-        i = 0
-        tsne_visual(np.array(data.test_unseen_feature),np.array(data.test_unseen_label),path = f'{opt.dataset}_{bestAcc}_untuned.pdf')
-        while i*opt.batch_size < data.ntest_unseen:
-            inputRes = data.test_unseen_feature[i*opt.batch_size:(i+1)*opt.batch_size]
-            tuneRes,_ = net._forward(inputRes.cuda())
-            tune_test_unseen_feature.append(tuneRes.detach().cpu())
-            i+=1
-        tune_test_unseen_feature=torch.cat(tune_test_unseen_feature,dim=0)
-        logger.info(len(tune_test_unseen_feature))
-        tsne_visual(np.array(tune_test_unseen_feature),np.array(data.test_unseen_label),path = f'{opt.dataset}_E{opt.tune_epoch}_{bestAcc}_tuned_.pdf')
+    # if show_visual:
+    #     tune_test_unseen_feature=[]
+    #     i = 0
+    #     tsne_visual(np.array(data.test_unseen_feature),np.array(data.test_unseen_label),path = f'{opt.dataset}_{bestAcc}_untuned.pdf')
+    #     while i*opt.batch_size < data.ntest_unseen:
+    #         inputRes = data.test_unseen_feature[i*opt.batch_size:(i+1)*opt.batch_size]
+    #         tuneRes,_ = net._forward(inputRes.cuda())
+    #         tune_test_unseen_feature.append(tuneRes.detach().cpu())
+    #         i+=1
+    #     tune_test_unseen_feature=torch.cat(tune_test_unseen_feature,dim=0)
+    #     logger.info(len(tune_test_unseen_feature))
+    #     tsne_visual(np.array(tune_test_unseen_feature),np.array(data.test_unseen_label),path = f'{opt.dataset}_E{opt.tune_epoch}_{bestAcc}_tuned_.pdf')
 
     if opt.pretune_feature:
         i = 0

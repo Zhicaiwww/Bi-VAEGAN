@@ -1,7 +1,7 @@
 #!/bin/bash
-export CUDA_VISIBLE_DEVICES=4
+export CUDA_VISIBLE_DEVICES=5
 export OMP_NUM_THREADS=2 
-export DATA_ROOT=/home/zhicai/data
+export DATA_ROOT=/home/zhicai/datasets/ZSL_data
 export DATASET=AwA2
 export NCLASS_ALL=50
 export ATTSIZE=85
@@ -26,11 +26,11 @@ export MSE_WEIGHT=1
 export RADIUS=1
 export MANUALSEED=9182
 export NZ=1024
-export BETA=10
+export BETA=1
 # --with_norm_weight\
 # --with_NoGPSUM \
-seed=(1325 2315) # 
-r=(1)
+seed=(4115) # 
+r=(5)
 
 for six in $(seq 1 1 ${#seed[@]}); do
     for six2 in $(seq 1 1 ${#r[@]}); do

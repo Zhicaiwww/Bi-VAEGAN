@@ -87,12 +87,12 @@ def trainnet(net):
         p.requires_grad = True 
 
 # setup optimizer
-optimizerCritic = optim.Adam(netCritic.parameters(), lr=opt.lr, betas=(0.5, 0.999))
-optimizerCritic_un = optim.Adam(netCritic_un.parameters(),lr=opt.lr,betas = (0.5, 0.999))
-optimizerG = optim.Adam(netG.parameters(), lr=opt.lr, betas=(0.5, 0.999))
-optimizerE_att = optim.Adam(netE.parameters(), lr=opt.lr, betas=(0.5, 0.999))
-optimizerRCritic = optim.Adam(netRCritic.parameters(), lr=opt.lr, betas=(0.5, 0.999))
-optimizerR = optim.Adam(netR.parameters(), lr=opt.lr, betas=(0.5, 0.999))
+optimizerCritic = optim.AdamW(netCritic.parameters(), lr=opt.lr, betas=(0.5, 0.999))
+optimizerCritic_un = optim.AdamW(netCritic_un.parameters(),lr=opt.lr,betas = (0.5, 0.999))
+optimizerG = optim.AdamW(netG.parameters(), lr=opt.lr, betas=(0.5, 0.999))
+optimizerE_att = optim.AdamW(netE.parameters(), lr=opt.lr, betas=(0.5, 0.999))
+optimizerRCritic = optim.AdamW(netRCritic.parameters(), lr=opt.lr, betas=(0.5, 0.999))
+optimizerR = optim.AdamW(netR.parameters(), lr=opt.lr, betas=(0.5, 0.999))
 
 best_gzsl_acc=0
 best_zsl_acc = 0
@@ -124,7 +124,6 @@ for epoch in range(opt.nepoch):
         ### Train attribute regressor 
 
 
-
         if i % 5 == 0 and opt.R:
             
             if opt.RCritic and use_transductive_training:
@@ -133,7 +132,7 @@ for epoch in range(opt.nepoch):
                 trainnet(netRCritic)
                 freezenet(netR)
                 # Dafault set 3 
-                for j in range(3):
+                for j in range(5):
                     netRCritic.zero_grad()
                     # Encode seen attribute in RCritic
                     sample(perb = opt.perb)

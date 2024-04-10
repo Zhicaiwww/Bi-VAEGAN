@@ -1,7 +1,7 @@
 #!/bin/bash
 export CUDA_VISIBLE_DEVICES=1
 export OMP_NUM_THREADS=4 
-export DATA_ROOT=/home/zhicai/data
+export DATA_ROOT=/data/zhicai/dataset/ZSL_data
 export DATASET=CUB
 export NCLASS_ALL=200
 export ATTSIZE=312
@@ -28,7 +28,7 @@ export MANUALSEED=3483
 export NZ=312
 export BETA=10 # L_R weight
 seed=(4115)
-beat=(10)
+beta=(10)
 for six in $(seq 1 1 ${#seed[@]}); do
     for six2 in $(seq 1 1 ${#beta[@]}); do
         export MANUALSEED=${seed[((six-1))]}
